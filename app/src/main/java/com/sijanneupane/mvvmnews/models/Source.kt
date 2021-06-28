@@ -1,4 +1,4 @@
-package com.sijanneupane.mvvmnews
+package com.sijanneupane.mvvmnews.models
 
 data class Source(
     val id: Any,
