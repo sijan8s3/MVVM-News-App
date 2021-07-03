@@ -2,6 +2,7 @@ package com.sijanneupane.mvvmnews.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 /*
 To save the article to database we need to annotate the class with entity
@@ -23,4 +24,5 @@ data class Article(
     val title: String,
     val url: String,
     val urlToImage: String
-)
+) : Serializable
+//serializing to send whole class with bundle

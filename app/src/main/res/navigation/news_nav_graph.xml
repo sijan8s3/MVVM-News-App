@@ -43,5 +43,9 @@
     <fragment
         android:id="@+id/articleFragment"
         android:name="com.sijanneupane.mvvmnews.ui.fragments.ArticleFragment"
-        android:label="ArticleFragment" />
+        android:label="ArticleFragment" >
+        <argument
+            android:name="article"
+            app:argType="com.sijanneupane.mvvmnews.models.Article" />
+    </fragment>
 </navigation>
