@@ -3,6 +3,7 @@ package com.sijanneupane.mvvmnews.ui
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sijanneupane.mvvmnews.models.Article
 import com.sijanneupane.mvvmnews.models.NewsResponse
 import com.sijanneupane.mvvmnews.repository.NewsRepository
 import com.sijanneupane.mvvmnews.utils.Resource
@@ -67,6 +68,25 @@ class NewsViewModel(
             }
         }
         return Resource.Error(response.message())
+    }
+
+    /*
+    function to save articles to db: coroutine
+     */
+    fun saveArticle(article: Article)= viewModelScope.launch {
+        newsRepository.upsert(article)
+    }
+
+    /*
+    function to get all saved news articles
+     */
+    fun getSavedArticle()= newsRepository.getSavedNews()
+
+    /*
+    function to delete article from db
+     */
+    fun deleteSavedArticle(article: Article)= viewModelScope.launch {
+        newsRepository.deleteArticle(article)
     }
 
 }

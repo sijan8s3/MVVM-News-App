@@ -1,10 +1,15 @@
 package com.sijanneupane.mvvmnews.ui.fragments
 
+import android.content.ClipData
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.sijanneupane.mvvmnews.R
 import com.sijanneupane.mvvmnews.adapters.NewsAdapter
 import com.sijanneupane.mvvmnews.ui.MainActivity
@@ -37,6 +42,42 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
                 bundle
             )
         }
+
+        //swipe delete variable
+        val itemTouchHelperCallBack = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, //direction
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // swipe direction
+        ){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position= viewHolder.adapterPosition
+                val article= newsAdapter.differ.currentList[position]
+                viewModel.deleteSavedArticle(article)
+                //execute undo Snackbar
+                Snackbar.make(view, " Article Deleted Successfully ", Snackbar.LENGTH_LONG).apply {
+                    setAction("Undo") {
+                        viewModel.saveArticle(article)
+                    }
+                    show()
+                }
+            }
+        }
+        //item touch helper
+        ItemTouchHelper(itemTouchHelperCallBack).apply {
+            attachToRecyclerView(rvSavedNews)
+        }
+
+        //get saved news, observe on changes on out database
+        viewModel.getSavedArticle().observe(viewLifecycleOwner, Observer { articles -> //new list of articles
+            newsAdapter.differ.submitList(articles) //update recyclerview //differ will calculate the difference between lists
+        })
     }
 
     private fun setupRecyclerView(){
