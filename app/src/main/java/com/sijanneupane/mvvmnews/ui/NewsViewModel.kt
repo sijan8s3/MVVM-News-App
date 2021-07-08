@@ -21,6 +21,9 @@ class NewsViewModel(
     //Pagination
     var breakingNewsPage= 1
     var searchNewsPage= 1
+    var breakingNewsResponse : NewsResponse? = null
+    var searchNewsResponse : NewsResponse? = null
+
 
     init {
         getBreakingNews("in")
@@ -55,7 +58,15 @@ class NewsViewModel(
     private fun handleBreakingNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse>{
         if (response.isSuccessful){
             response.body()?.let { resultResponse ->
-                return  Resource.Success(resultResponse)
+                breakingNewsPage++
+                if (breakingNewsResponse== null){
+                    breakingNewsResponse= resultResponse //if first page save the result to the response
+                }else{
+                    val oldArticles= breakingNewsResponse?.articles //else, add all articles to old
+                    val newArticle= resultResponse.articles //add new response to new
+                    oldArticles?.addAll(newArticle) //add new articles to old articles
+                }
+                return  Resource.Success(breakingNewsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())
@@ -64,7 +75,15 @@ class NewsViewModel(
     private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse>{
         if (response.isSuccessful){
             response.body()?.let { resultResponse ->
-                return  Resource.Success(resultResponse)
+                searchNewsPage++
+                if (searchNewsResponse== null){
+                    searchNewsResponse= resultResponse //if first page save the result to the response
+                }else{
+                    val oldArticles= searchNewsResponse?.articles //else, add all articles to old
+                    val newArticle= resultResponse.articles //add new response to new
+                    oldArticles?.addAll(newArticle) //add new articles to old articles
+                }
+                return  Resource.Success(searchNewsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())
